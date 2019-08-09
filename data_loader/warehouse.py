@@ -18,7 +18,8 @@ class WarehouseSegmentation(data.Dataset):
     def __init__(self, root='./datasets/warehosue', split='train', mode=None, transform=None,
                  base_size=520, crop_size=480, **kwargs):
         super(WarehouseSegmentation, self).__init__()
-        self.root = '/media/aass/783de628-b7ff-4217-8c96-7f3764de70d9/Warehouse_Dataset' #root
+        #self.root = '/media/aass/783de628-b7ff-4217-8c96-7f3764de70d9/Warehouse_Dataset'
+        self.root = '/Warehouse_Dataset'
         self.split = split
         self.mode = mode if mode is not None else split
         self.transform = transform
