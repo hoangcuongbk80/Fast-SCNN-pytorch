@@ -1,7 +1,9 @@
 from .cityscapes import CitySegmentation
+from .warehouse import WarehouseSegmentation
 
 datasets = {
-    'citys': CitySegmentation,
+    #'citys': CitySegmentation,
+    'warehouse': WarehouseSegmentation,
 }
 
 

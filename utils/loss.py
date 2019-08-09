@@ -33,11 +33,13 @@ class MixSoftmaxCrossEntropyLoss(nn.CrossEntropyLoss):
 
 
 class SoftmaxCrossEntropyOHEMLoss(nn.Module):
-    def __init__(self, ignore_label=-1, thresh=0.7, min_kept=256, use_weight=True, **kwargs):
+    def __init__(self, ignore_label=-1, thresh=0.7, min_kept=256, use_weight=False, **kwargs):
         super(SoftmaxCrossEntropyOHEMLoss, self).__init__()
         self.ignore_label = ignore_label
         self.thresh = float(thresh)
         self.min_kept = int(min_kept)
+        #Cuong
+        use_weight = False
         if use_weight:
             print("w/ class balance")
             weight = torch.FloatTensor([0.8373, 0.918, 0.866, 1.0345, 1.0166, 0.9969, 0.9754,

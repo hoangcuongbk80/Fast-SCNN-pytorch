@@ -43,7 +43,7 @@ class CitySegmentation(data.Dataset):
     def __init__(self, root='./datasets/citys', split='train', mode=None, transform=None,
                  base_size=520, crop_size=480, **kwargs):
         super(CitySegmentation, self).__init__()
-        self.root = root
+        self.root = '/media/aass/783de628-b7ff-4217-8c96-7f3764de70d9/CityScapes/citys' #root
         self.split = split
         self.mode = mode if mode is not None else split
         self.transform = transform
@@ -68,6 +68,7 @@ class CitySegmentation(data.Dataset):
         for value in values:
             assert (value in self._mapping)
         index = np.digitize(mask.ravel(), self._mapping, right=True)
+        print('Cuong {}'.format(index.shape))
         return self._key[index].reshape(mask.shape)
 
     def __getitem__(self, index):
