@@ -240,6 +240,8 @@ def get_fast_scnn(dataset='citys', pretrained=False, root='./weights', map_cpu=F
         'ade20k': 'ade',
         'coco': 'coco',
         'citys': 'citys',
+        'warehouse': 'warehouse',
+        'ycb-video': 'ycb-video',
     }
     from data_loader import datasets
     model = FastSCNN(datasets[dataset].NUM_CLASS, **kwargs)

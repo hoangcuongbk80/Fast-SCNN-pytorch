@@ -1,3 +1,5 @@
 python3 train.py --model fast_scnn --dataset citys
 python3 train.py --model fast_scnn --dataset warehouse
+python3 train.py --model fast_scnn --dataset ycb-video
 python3 demo.py --model fast_scnn --input-pic ./png/frankfurt_000001_058914_leftImg8bit.png
+python3 demo.py --model fast_scnn --dataset warehouse --input-pic ./png/000001-color.png
