@@ -18,8 +18,8 @@ class ycbSegmentation(data.Dataset):
     def __init__(self, root='./datasets/YCB-Video', split='train', mode=None, transform=None,
                  base_size=520, crop_size=480, **kwargs):
         super(ycbSegmentation, self).__init__()
-        self.root = '/media/aass/783de628-b7ff-4217-8c96-7f3764de70d9/RGBD_DATASETS/YCB_Video_Dataset'
-        #self.root = '/YCB_Video_Dataset'
+        #self.root = '/media/aass/783de628-b7ff-4217-8c96-7f3764de70d9/RGBD_DATASETS/YCB_Video_Dataset'
+        self.root = '/YCB_Video_Dataset'
         self.split = split
         self.mode = mode if mode is not None else split
         self.transform = transform
