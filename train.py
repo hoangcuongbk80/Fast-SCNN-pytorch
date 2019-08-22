@@ -38,7 +38,7 @@ def parse_args():
                         help='number of epochs to train (default: 100)')
     parser.add_argument('--start_epoch', type=int, default=0,
                         metavar='N', help='start epochs (default:0)')
-    parser.add_argument('--batch-size', type=int, default=2,
+    parser.add_argument('--batch-size', type=int, default=8,
                         metavar='N', help='input batch size for training (default: 12)')
     parser.add_argument('--lr', type=float, default=1e-2, metavar='LR',
                         help='learning rate (default: 1e-2)')
@@ -69,12 +69,16 @@ class Trainer(object):
     def __init__(self, args):
         self.args = args
         # image transform
-        input_transform = transforms.Compose([
+        rgb_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize([.485, .456, .406], [.229, .224, .225]),
         ])
+        depth_transform = transforms.Compose([
+            transforms.ToTensor(),
+            #transforms.Normalize((0.5,), (0.5,)),
+        ])
         # dataset and dataloader
-        data_kwargs = {'transform': input_transform, 'base_size': args.base_size, 'crop_size': args.crop_size}
+        data_kwargs = {'rgb_transform': rgb_transform, 'depth_transform': depth_transform, 'base_size': args.base_size, 'crop_size': args.crop_size}
         train_dataset = get_segmentation_dataset(args.dataset, split=args.train_split, mode='train', **data_kwargs)
         val_dataset = get_segmentation_dataset(args.dataset, split='val', mode='val', **data_kwargs)
         self.train_loader = data.DataLoader(dataset=train_dataset,
@@ -124,15 +128,16 @@ class Trainer(object):
         for epoch in range(self.args.start_epoch, self.args.epochs):
             self.model.train()
 
-            for i, (images, targets) in enumerate(self.train_loader):
+            for i, (images, depths, targets) in enumerate(self.train_loader):
                 cur_lr = self.lr_scheduler(cur_iters)
                 for param_group in self.optimizer.param_groups:
                     param_group['lr'] = cur_lr
 
                 images = images.to(self.args.device)
+                depths = depths.to(self.args.device, dtype=torch.float)
                 targets = targets.to(self.args.device)
 
-                outputs = self.model(images)
+                outputs = self.model(images, depths)
                 loss = self.criterion(outputs, targets)
 
                 self.optimizer.zero_grad()

@@ -30,15 +30,15 @@ class FastSCNN(nn.Module):
                 nn.Conv2d(32, num_classes, 1)
             )
 
-    def forward(self, x):
-        size = x.size()[2:]
-        higher_res_features = self.learning_to_downsample(x)
-        x = self.global_feature_extractor(higher_res_features)
-        x = self.feature_fusion(higher_res_features, x)
-        x = self.classifier(x)
+    def forward(self, rgb, depth):
+        size = rgb.size()[2:]
+        higher_res_features = self.learning_to_downsample(rgb, depth)
+        rgb = self.global_feature_extractor(higher_res_features)
+        rgb = self.feature_fusion(higher_res_features, rgb)
+        rgb = self.classifier(rgb)
         outputs = []
-        x = F.interpolate(x, size, mode='bilinear', align_corners=True)
-        outputs.append(x)
+        rgb = F.interpolate(rgb, size, mode='bilinear', align_corners=True)
+        outputs.append(rgb)
         if self.aux:
             auxout = self.auxlayer(higher_res_features)
             auxout = F.interpolate(auxout, size, mode='bilinear', align_corners=True)
@@ -150,15 +150,26 @@ class LearningToDownsample(nn.Module):
 
     def __init__(self, dw_channels1=32, dw_channels2=48, out_channels=64, **kwargs):
         super(LearningToDownsample, self).__init__()
-        self.conv = _ConvBNReLU(3, dw_channels1, 3, 2)
+        self.conv_rgb = _ConvBNReLU(3, dw_channels1, 3, 2)
+        self.conv_depth = _ConvBNReLU(1, dw_channels1, 3, 2)
         self.dsconv1 = _DSConv(dw_channels1, dw_channels2, 2)
         self.dsconv2 = _DSConv(dw_channels2, out_channels, 2)
 
-    def forward(self, x):
-        x = self.conv(x)
-        x = self.dsconv1(x)
-        x = self.dsconv2(x)
-        return x
+    def forward(self, rgb, depth):
+
+        depth = self.conv_depth(depth)
+        rgb = self.conv_rgb(rgb)
+        rgb = rgb + depth
+
+        depth = self.dsconv1(depth)
+        rgb = self.dsconv1(rgb)
+        rgb = rgb + depth
+
+        depth = self.dsconv2(depth)
+        rgb = self.dsconv2(rgb)
+        rgb = depth + rgb
+
+        return rgb
 
 
 class GlobalFeatureExtractor(nn.Module):
